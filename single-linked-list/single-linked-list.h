@@ -147,13 +147,11 @@ class SingleLinkedList {
     SingleLinkedList(const SingleLinkedList& other) {
         assert(size_ == 0 && head_.next_node == nullptr);
         SingleLinkedList temp;
-        for (size_t i = other.size_; i > 0; --i) {
-            auto it = other.cbegin();
-            for (size_t j = i - 1; j > 0; --j) {
-                ++it;
-            }
-            temp.PushFront(*it);
-        }
+        ConstIterator pos = temp.before_begin();
+        for (auto it = other.begin(); it != other.end(); ++it) {
+            temp.InsertAfter(pos, *it);
+            pos++;
+        } 
         swap(temp);
     }
     
@@ -167,7 +165,7 @@ class SingleLinkedList {
     }
     
      Iterator InsertAfter(ConstIterator pos, const Type& value) {
-        assert(&pos != nullptr);
+        assert(pos.node_ != nullptr);
         pos.node_->next_node = new Node(value, pos.node_->next_node);
         ++size_;
         return Iterator{ pos.node_->next_node };
@@ -182,9 +180,9 @@ class SingleLinkedList {
     }
 
     Iterator EraseAfter(ConstIterator pos) noexcept {
-        assert(&pos != nullptr);
+        assert(pos.node_ != nullptr);
         auto to_remove = pos.node_->next_node;
-        assert(&to_remove != nullptr);
+        assert(to_remove != nullptr);
         pos.node_->next_node = to_remove->next_node;
         delete to_remove;
         --size_;
